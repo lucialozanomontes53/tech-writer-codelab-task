@@ -56,10 +56,14 @@ We need to add a method in the service layer to handle the transformation from t
  * Maps the DTO to a Product entity and saves it.
  */
 public Product createProduct(CreateProductRequest request) {
-    Product product = new Product();
-    product.setName(request.name());
-    product.setPrice(request.price());
-    
+    Product product = Product.builder()
+        .name(request.getName())
+        .description(request.getDescription())
+        .price(request.getPrice())
+        .category(request.getCategory())
+        .stock(request.getStock() != null ? request.getStock() : 0)
+        .build();
+
     return productRepository.save(product);
 }
 ```
