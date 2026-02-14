@@ -76,31 +76,24 @@ Open `src/main/java/com/example/codelab/controller/ProductController.java`.
 Implement the `@PostMapping` method as shown below:
 
 ```java
-package com.example.codelab.controller;
-
 import com.example.codelab.dto.CreateProductRequest;
-import com.example.codelab.model.Product;
-import com.example.codelab.service.ProductService;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@RestController
-@RequestMapping("/products")
-public class ProductController {
-
-    private final ProductService productService;
-
-    // Best Practice: Constructor Injection
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED) // Returns HTTP 201
-    public Product create(@Valid @RequestBody CreateProductRequest request) {
-        return productService.createProduct(request);
-    }
+@PostMapping
+@Operation(summary = "Create a new product", description = "Creates a new product in the catalog")
+@ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Product created successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data")
+})
+public ResponseEntity<Product> createProduct(
+        @Parameter(description = "Product creation data") @Valid @RequestBody CreateProductRequest request) {
+    Product createdProduct = productService.createProduct(request);
+    return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
 }
 ```
 ## Verification
