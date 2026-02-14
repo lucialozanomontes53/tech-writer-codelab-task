@@ -26,20 +26,44 @@ To decouple our internal database structure from the API and prevent overposting
 package com.example.codelab.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.math.BigDecimal;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * DTO for creating a new product.
- * Using a Java Record for immutability and conciseness.
+ * Data Transfer Object for creating a new product.
+ * Contains validation constraints for input data.
  */
-public record CreateProductRequest(
-    @NotBlank(message = "Product name is required")
-    String name,
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class CreateProductRequest {
 
-    @Positive(message = "Price must be greater than zero")
-    BigDecimal price
-) {}
+    @NotBlank(message = "Product name is required")
+    @Size(min = 1, max = 100, message = "Product name must be between 1 and 100 characters")
+    private String name;
+
+    @Size(max = 500, message = "Description cannot exceed 500 characters")
+    private String description;
+
+    @NotNull(message = "Price is required")
+    @Positive(message = "Price must be a positive value")
+    private Double price;
+
+    @Size(max = 50, message = "Category cannot exceed 50 characters")
+    private String category;
+
+    @PositiveOrZero(message = "Stock cannot be negative")
+    private Integer stock;
+
+}
 
 ```
 
@@ -52,6 +76,8 @@ We need to add a method in the service layer to handle the transformation from t
 2. Add the following createProduct method:
 
 ```java
+import com.example.codelab.dto.CreateProductRequest;
+
 /**
  * Maps the DTO to a Product entity and saves it.
  */
@@ -101,9 +127,13 @@ To verify your implementation, run the application using `./mvnw spring-boot:run
 
 #### Request
 ```java
-curl -X POST http://localhost:8080/products \
-     -H "Content-Type: application/json" \
-     -d '{"name": "New Smartphone", "price": 799.99}'
+curl.exe -X POST http://localhost:8080/products
+-H "Content-Type: application/json"
+-d "{\"name\": \"New product\",
+    \"description\": \"Codelab Test\",
+    \"price\": 799.99,
+    \"category\": \"Tech\",
+    \"stock\": 10}"
 ```
 
 #### Expected response
