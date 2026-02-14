@@ -137,8 +137,6 @@ curl.exe -X POST http://localhost:8080/products
 ```
 
 #### Expected response
-**Status:** `201 Created`
-
 **Body:** The JSON representation of the product including its new `id`.
 
 ## Summary
